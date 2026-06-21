@@ -17,12 +17,12 @@
     kernelPackages = pkgs.linuxPackages_latest;
 
     initrd = {
-      # Resume from hibernate via the systemd initrd resume service.
-      # NOTE: only works when `boot.resumeDevice` points to a real swap
-      # device (file or partition). zram-only swap does NOT support hibernation.
-      # Add later, e.g.: boot.resumeDevice = "LABEL=swap"; or
-      #                  swapDevices = [ { device = "/swap/swapfile"; size = 8192; } ];
-      services.resume.enable = true;
+      # Hibernation resume: NOT enabled. With zram-only swap there's no real
+      # device to write the image to, so resume from hibernate can't work.
+      # When you set up a real swap file on btrfs or a swap partition, add:
+      #   boot.resumeDevice = "/swap/swapfile";   # or /dev/disk/by-label/swap
+      #   swapDevices = [ { device = "/swap/swapfile"; size = 8192; } ];
+      # and the systemd initrd will pick it up automatically (no .enable flag).
       availableKernelModules = [
         "xhci_pci" "thunderbolt" "nvme" "usbhid" "usb_storage" "sd_mod"
       ];
