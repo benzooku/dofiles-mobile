@@ -41,9 +41,6 @@ in
 
   # ── Polkit (for GUI auth prompts like GParted, dock, etc.) ───────────────
   security.polkit.enable = true;
-  environment.systemPackages = with pkgs; [
-    polkit_gnome
-  ];
 
   # ── Session-wide environment for Hyprland ────────────────────────────────
   environment.sessionVariables = {
@@ -80,6 +77,8 @@ in
 
   # ── System pkgs that don't fit into Home Manager (need root) ────────────
   environment.systemPackages = with pkgs; [
+    # Polkit agent (auth prompts at the greeter + in-session)
+    polkit polkit_gnome
     # Required for greetd → Hyprland session
     cage                        # fallback if Hyprland crashes
     xwayland
