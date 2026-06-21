@@ -1,0 +1,202 @@
+// =============================================================================
+// AGS Matrix theme — CSS variables (auto-converted to @define-color)
+// =============================================================================
+
+// ── Matrix palette (medium intensity) ─────────────────────────────────────
+$bg:           #0d140d;
+$surface:      #161b16;
+$surface-hi:   #1d271d;
+$border:       #1f2a1f;
+$text:         #cfd4cf;
+$text-dim:     #8a918c;
+$accent:       #41cc66;
+$accent-bright:#5fe07a;
+$accent-dim:   #2a8a44;
+$error:        #cc4154;
+$warning:      #d4a05f;
+
+// ── Top bar ───────────────────────────────────────────────────────────────
+.bar {
+    background-color: transparent;
+    color: $text;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 12px;
+    font-weight: 500;
+    min-height: 36px;
+    padding: 0 12px;
+}
+
+.bar > box {
+    background-color: transparent;
+}
+
+// ── Common widget look ────────────────────────────────────────────────────
+.module {
+    background-color: transparent;
+    padding: 0 8px;
+    margin: 0 2px;
+    border-radius: 4px;
+    transition: all 200ms ease;
+    color: $text;
+}
+
+.module:hover {
+    background-color: $surface-hi;
+    color: $accent-bright;
+}
+
+// ── Workspaces ────────────────────────────────────────────────────────────
+.workspace {
+    background-color: transparent;
+    color: $text-dim;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin: 0 1px;
+    font-weight: 600;
+    transition: all 200ms ease;
+}
+
+.workspace:hover {
+    background-color: $surface-hi;
+    color: $accent-bright;
+}
+
+.workspace.active {
+    background-color: $accent;
+    color: $bg;
+}
+
+.workspace.active:hover {
+    background-color: $accent-bright;
+}
+
+.workspace.empty {
+    color: alpha($text-dim, 0.5);
+}
+
+.workspace.occupied {
+    color: $text;
+}
+
+// ── Clock ─────────────────────────────────────────────────────────────────
+.clock {
+    background-color: transparent;
+    color: $accent;
+    font-weight: 600;
+    padding: 0 10px;
+    font-size: 13px;
+}
+
+.clock-time {
+    color: $accent-bright;
+}
+
+.clock-date {
+    color: $text-dim;
+    font-size: 11px;
+    margin-left: 8px;
+}
+
+// ── System stats ──────────────────────────────────────────────────────────
+.stat {
+    background-color: transparent;
+    color: $text;
+    padding: 0 8px;
+    font-size: 11px;
+    border-radius: 4px;
+}
+
+.stat:hover {
+    background-color: $surface-hi;
+}
+
+.stat-icon {
+    color: $accent;
+    margin-right: 4px;
+}
+
+.stat-value {
+    color: $text;
+}
+
+.stat.warn .stat-value {
+    color: $warning;
+}
+
+.stat.crit .stat-value {
+    color: $error;
+}
+
+// ── Battery ───────────────────────────────────────────────────────────────
+.battery {
+    background-color: transparent;
+    color: $text;
+    padding: 0 8px;
+}
+
+.battery.charging .stat-value {
+    color: $accent-bright;
+}
+
+.battery.low .stat-value {
+    color: $warning;
+}
+
+.battery.critical .stat-value {
+    color: $error;
+}
+
+// ── Network ───────────────────────────────────────────────────────────────
+.network {
+    color: $text;
+}
+
+.network.connected .stat-icon {
+    color: $accent;
+}
+
+.network.disconnected .stat-icon {
+    color: $text-dim;
+}
+
+// ── Audio ─────────────────────────────────────────────────────────────────
+.audio {
+    color: $text;
+}
+
+.audio.muted .stat-icon {
+    color: $text-dim;
+}
+
+// ── Tray ──────────────────────────────────────────────────────────────────
+.tray {
+    color: $text;
+}
+
+.tray-item {
+    background-color: transparent;
+    padding: 0 6px;
+    border-radius: 4px;
+}
+
+.tray-item:hover {
+    background-color: $surface-hi;
+}
+
+// ── Media (MPRIS) ─────────────────────────────────────────────────────────
+.media {
+    background-color: transparent;
+    color: $text;
+    padding: 0 10px;
+}
+
+.media-title {
+    color: $accent;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.media-artist {
+    color: $text-dim;
+    font-size: 11px;
+}

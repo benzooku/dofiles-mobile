@@ -1,0 +1,32 @@
+{
+  "name": "ags-matrix-bar",
+  "version": "2.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "dev": "ags run ."
+  },
+  "dependencies": {
+    "astal": {
+      "gi": {
+        "Gtk": "4.0",
+        "Gdk": "4.0",
+        "Astal": "4.0",
+        "AstalHyprland": "0.1",
+        "AstalBattery": "0.1",
+        "AstalNetwork": "0.1",
+        "AstalAudio": "0.1",
+        "AstalTray": "0.1",
+        "AstalMpris": "0.1",
+        "AstalSys": "0.1",
+        "AstalApps": "0.1",
+        "AstalPowerProfiles": "0.1"
+      }
+    }
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "@types/node": "^22.9.0"
+  }
+}

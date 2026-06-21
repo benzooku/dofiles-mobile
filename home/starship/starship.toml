@@ -1,0 +1,59 @@
+# ── starship.toml — Matrix prompt ─────────────────────────────────────────
+# Phosphor green, monospace, lean modules.
+
+# ── Prompt character ─────────────────────────────────────────────────────
+[character]
+success_symbol = "[▌](#41cc66)"
+error_symbol = "[▌](#cc4154)"
+
+# ── Directory ─────────────────────────────────────────────────────────────
+[directory]
+style = "bold #5fe07a"
+read_only = " ▒"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = "󰝚 "
+"Pictures" = " "
+"Developer" = "󰲋 "
+
+# ── Git branch ────────────────────────────────────────────────────────────
+[git_branch]
+symbol = ""
+style = "bold #41cc66"
+format = "[$symbol$branch(:$remote_branch)]($style) "
+
+# ── Git status ────────────────────────────────────────────────────────────
+[git_status]
+style = "#2a8a44"
+format = "[$all_status$ahead_behind ]($style)"
+
+# ── Node.js ───────────────────────────────────────────────────────────────
+[nodejs]
+symbol = ""
+style = "bold #5fe07a"
+
+# ── Python ────────────────────────────────────────────────────────────────
+[python]
+symbol = ""
+style = "bold #5fe07a"
+
+# ── Elixir ────────────────────────────────────────────────────────────────
+[elixir]
+symbol = ""
+style = "bold #5fe07a"
+
+# ── Rust ──────────────────────────────────────────────────────────────────
+[rust]
+symbol = ""
+style = "bold #5fe07a"
+
+# ── Time ──────────────────────────────────────────────────────────────────
+[time]
+disabled = false
+time_format = "%R"
+style = "#8a918c"
+format = " [$time]($style)"

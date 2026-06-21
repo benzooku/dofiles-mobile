@@ -1,0 +1,86 @@
+{
+    // ── Waybar Matrix theme — BACKUP (AGS is the active bar) ──
+    "layer": "top",
+    "position": "top",
+    "height": 36,
+    "spacing": 4,
+
+    "modules-left": ["hyprland/workspaces"],
+    "modules-center": ["clock"],
+    "modules-right": ["tray", "pulseaudio", "network", "cpu", "memory", "battery"],
+
+    "hyprland/workspaces": {
+        "format": "{id}",
+        "on-click": "activate",
+        "sort-by-number": true,
+        "active-only": false,
+        "all-outputs": false,
+        "format-icons": {
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "urgent": "!",
+            "focused": "*",
+            "default": ""
+        }
+    },
+
+    "clock": {
+        "format": "{:%H:%M  %a %d %b}",
+        "format-alt": "{:%A %d %B %Y}",
+        "tooltip-format": "<tt><small>{calendar}</small></tt>"
+    },
+
+    "battery": {
+        "states": {
+            "good": 80,
+            "warning": 30,
+            "critical": 15
+        },
+        "format": " {icon} {capacity}% ",
+        "format-charging": " {icon} {capacity}% ",
+        "format-icons": ["", "", "", "", ""],
+        "format-alt": "{time}"
+    },
+
+    "network": {
+        "format-wifi": " {signalStrength}%  {ssid} ",
+        "format-ethernet": " {ifname} ",
+        "format-disconnected": " ✕ offline ",
+        "tooltip-format": "{ifname}: {ipaddr}/{cidr}"
+    },
+
+    "cpu": {
+        "interval": 2,
+        "format": " {usage}% ",
+        "tooltip": true
+    },
+
+    "memory": {
+        "interval": 5,
+        "format": " {percentage}% "
+    },
+
+    "pulseaudio": {
+        "format": " {icon} {volume}% ",
+        "format-muted": " muted ",
+        "format-icons": {
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol",
+        "scroll-step": 5
+    },
+
+    "mpris": {
+        "format": " {player}  {title} ",
+        "format-alt": " {player}  {title} — {artist} ",
+        "player-ignored": []
+    },
+
+    "tray": {
+        "spacing": 8,
+        "icon-size": 16
+    }
+}

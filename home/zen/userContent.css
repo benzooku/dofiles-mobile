@@ -1,0 +1,64 @@
+/* ── Zen Browser — force dark scheme on web content ───────────────────────
+ *  - tries prefers-color-scheme first (sites that respect it)
+ *  - fallback: invert lightness so light pages become dark too
+ * ------------------------------------------------------------------------- */
+
+/* ── Dark color-scheme hint ─────────────────────────────────────────────── */
+:root {
+    color-scheme: dark;
+}
+
+html,
+body {
+    background-color: #0d140d !important;
+    color-scheme: dark !important;
+}
+
+/* ── Web content (when the site opts in) ────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+    }
+}
+
+/* ── Form controls ──────────────────────────────────────────────────────── */
+input,
+textarea,
+select,
+button {
+    background-color: #161b16 !important;
+    color: #cfd4cf !important;
+    border-color: #1f2a1f !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #41cc66 !important;
+    outline: none !important;
+}
+
+::selection {
+    background-color: #41cc66 !important;
+    color: #0d140d !important;
+}
+
+/* ── Aggressive fallback: invert only when no dark scheme detected ──────── */
+/* Sites without prefers-color-scheme support get a soft invert + hue rotate */
+@media (prefers-color-scheme: light) {
+    html {
+        filter: invert(0.92) hue-rotate(180deg) saturate(0.85);
+        background-color: #0d140d !important;
+    }
+
+    /* Re-invert media so images and videos stay normal */
+    img,
+    picture,
+    video,
+    iframe,
+    canvas,
+    svg,
+    [style*="background-image"] {
+        filter: invert(1) hue-rotate(180deg) saturate(1.15);
+    }
+}

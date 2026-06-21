@@ -1,0 +1,158 @@
+/* ── Zen Browser Matrix theme (userChrome.css) ────────────────────────────
+ * Place at ~/.zen/<profile>/chrome/userChrome.css (or symlinked by
+ * wayland-apps.nix activation script).
+ *
+ * Medium-intensity Matrix palette: not a full green takeover, just the
+ * chrome chrome and accents.
+ * ----------------------------------------------------------------------- */
+
+/* ── Palette ────────────────────────────────────────────────────────────── */
+:root {
+    --matrix-bg:           #0d140d;
+    --matrix-surface:      #161b16;
+    --matrix-surface-hi:   #1d271d;
+    --matrix-border:       #1f2a1f;
+    --matrix-text:         #cfd4cf;
+    --matrix-text-dim:     #8a918c;
+    --matrix-accent:       #41cc66;
+    --matrix-accent-bright:#5fe07a;
+    --matrix-accent-dim:   #2a8a44;
+}
+
+/* ── Global font / background ──────────────────────────────────────────── */
+* {
+    font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace !important;
+}
+
+browser,
+#navigator-toolbox,
+#browser,
+#tabbrowser-tabbox,
+#tabbrowser-tabpanels {
+    background-color: var(--matrix-bg) !important;
+    color: var(--matrix-text) !important;
+}
+
+/* ── Tab strip ──────────────────────────────────────────────────────────── */
+#tabbrowser-tabs {
+    background-color: var(--matrix-surface) !important;
+    border-bottom: 1px solid var(--matrix-border) !important;
+}
+
+.tabbrowser-tab {
+    background-color: var(--matrix-surface) !important;
+    color: var(--matrix-text-dim) !important;
+    border: 1px solid var(--matrix-border) !important;
+    border-radius: 4px !important;
+    padding: 2px 8px !important;
+    margin: 2px !important;
+    min-height: 28px !important;
+}
+
+.tabbrowser-tab:hover {
+    background-color: var(--matrix-surface-hi) !important;
+    color: var(--matrix-accent-bright) !important;
+}
+
+.tabbrowser-tab[selected="true"] {
+    background-color: var(--matrix-accent) !important;
+    color: var(--matrix-bg) !important;
+    border-color: var(--matrix-accent-bright) !important;
+}
+
+.tabbrowser-tab[selected="true"] .tab-label {
+    color: var(--matrix-bg) !important;
+    font-weight: 600 !important;
+}
+
+/* ── URL bar ─────────────────────────────────────────────────────────────── */
+#urlbar,
+#urlbar-input-container,
+#searchbar {
+    background-color: var(--matrix-surface) !important;
+    color: var(--matrix-text) !important;
+    border: 1px solid var(--matrix-border) !important;
+    border-radius: 4px !important;
+}
+
+#urlbar:focus-within,
+#urlbar[focused="true"] {
+    border-color: var(--matrix-accent) !important;
+    box-shadow: 0 0 0 1px var(--matrix-accent-dim) !important;
+}
+
+/* ── Navigation toolbar ─────────────────────────────────────────────────── */
+#nav-bar,
+#toolbar-menubar,
+toolbar {
+    background-color: var(--matrix-surface) !important;
+    color: var(--matrix-text) !important;
+    border-bottom: 1px solid var(--matrix-border) !important;
+}
+
+toolbarbutton {
+    color: var(--matrix-text) !important;
+    border-radius: 4px !important;
+}
+
+toolbarbutton:hover {
+    background-color: var(--matrix-surface-hi) !important;
+    color: var(--matrix-accent-bright) !important;
+}
+
+toolbarbutton[open="true"],
+toolbarbutton:active {
+    background-color: var(--matrix-accent-dim) !important;
+}
+
+/* ── Sidebar / sidebar tabs ─────────────────────────────────────────────── */
+#sidebar-box,
+#sidebar {
+    background-color: var(--matrix-surface) !important;
+    color: var(--matrix-text) !important;
+    border-right: 1px solid var(--matrix-border) !important;
+}
+
+/* ── Context menus, popups ──────────────────────────────────────────────── */
+menupopup,
+panel,
+popup,
+panelview {
+    background-color: var(--matrix-surface) !important;
+    color: var(--matrix-text) !important;
+    border: 1px solid var(--matrix-border) !important;
+}
+
+menuitem:hover,
+menu[_moz-menuactive="true"] {
+    background-color: var(--matrix-accent-dim) !important;
+    color: var(--matrix-accent-bright) !important;
+}
+
+/* ── Scrollbars ─────────────────────────────────────────────────────────── */
+*::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}
+
+*::-webkit-scrollbar-track {
+    background-color: var(--matrix-bg) !important;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: var(--matrix-surface-hi) !important;
+    border-radius: 4px !important;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: var(--matrix-accent-dim) !important;
+}
+
+/* ── Selection ──────────────────────────────────────────────────────────── */
+*::selection {
+    background-color: var(--matrix-accent) !important;
+    color: var(--matrix-bg) !important;
+}
+
+/* ── Hide unneeded chrome ───────────────────────────────────────────────── */
+/* #titlebar { -moz-appearance: none !important; } */

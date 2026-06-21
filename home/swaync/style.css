@@ -1,0 +1,144 @@
+/* =============================================================================
+ * swaync — Matrix theme
+ * ============================================================================= */
+
+@define-color bg           #0d140d;
+@define-color surface      #161b16;
+@define-color surface-hi   #1d271d;
+@define-color border       #1f2a1f;
+@define-color text         #cfd4cf;
+@define-color text-dim     #8a918c;
+@define-color accent       #41cc66;
+@define-color accent-bright #5fe07a;
+@define-color accent-dim   #2a8a44;
+@define-color error        #cc4154;
+
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 12px;
+    color: @text;
+    background: transparent;
+}
+
+.control-center {
+    background: alpha(@bg, 0.94);
+    border: 2px solid @accent;
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.control-center-list {
+    background: transparent;
+}
+
+.notification {
+    background: alpha(@surface, 0.96);
+    border: 1px solid @border;
+    border-radius: 4px;
+    margin: 6px 0;
+    padding: 10px 12px;
+    transition: all 200ms ease;
+}
+
+.notification:hover {
+    border-color: @accent;
+}
+
+.notification.critical {
+    border-color: @error;
+}
+
+.notification.low {
+    border-color: @accent-dim;
+}
+
+.notification-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: @accent;
+    margin-bottom: 4px;
+}
+
+.notification-body {
+    font-size: 12px;
+    color: @text;
+    margin-bottom: 4px;
+}
+
+.notification-app-name {
+    font-size: 10px;
+    color: @text-dim;
+    margin-top: 4px;
+}
+
+.notification-action-button {
+    background: @surface-hi;
+    color: @text;
+    border: 1px solid @accent-dim;
+    border-radius: 4px;
+    padding: 4px 10px;
+    margin: 4px 4px 0 0;
+}
+
+.notification-action-button:hover {
+    background: @accent;
+    color: @bg;
+    border-color: @accent;
+}
+
+.notification-close-button {
+    background: transparent;
+    color: @text-dim;
+    border: none;
+    font-size: 14px;
+}
+
+.notification-close-button:hover {
+    color: @accent;
+}
+
+.notification-default-action {
+    padding: 0;
+    margin: 0;
+}
+
+.floating-notifications {
+    background: transparent;
+}
+
+.topbar {
+    margin-bottom: 10px;
+}
+
+.topbar-title {
+    color: @accent;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.button {
+    background: @surface-hi;
+    color: @text;
+    border: 1px solid @accent-dim;
+    border-radius: 4px;
+    padding: 5px 12px;
+    margin: 2px;
+    transition: all 150ms ease;
+}
+
+.button:hover {
+    background: @accent;
+    color: @bg;
+    border-color: @accent;
+}
+
+.button.dnd-active {
+    background: @accent;
+    color: @bg;
+    border-color: @accent;
+}
+
+.button.dnd-active:hover {
+    background: @error;
+    border-color: @error;
+}

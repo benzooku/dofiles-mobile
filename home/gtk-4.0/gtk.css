@@ -1,0 +1,89 @@
+/* ── GTK 4 / libadwaita Matrix palette overrides ─────────────────────────
+ *  Subtle, medium intensity. Not a full green takeover — just accented
+ *  backgrounds, borders, and selections.
+ * ------------------------------------------------------------------------- */
+
+* {
+    --accent-bg:        #41cc66;
+    --accent-fg:        #0d140d;
+    --accent-color:     #41cc66;
+}
+
+headerbar {
+    background: #161b16;
+    border-bottom: 1px solid #1f2a1f;
+    color: #cfd4cf;
+    min-height: 38px;
+}
+
+headerbar button {
+    background: transparent;
+    color: #cfd4cf;
+    border-radius: 4px;
+}
+
+headerbar button:hover {
+    background: #1d271d;
+    color: #5fe07a;
+}
+
+entry,
+textview,
+spinbutton {
+    background: #161b16;
+    color: #cfd4cf;
+    border: 1px solid #1f2a1f;
+    border-radius: 4px;
+}
+
+entry:focus,
+textview:focus,
+spinbutton:focus {
+    border-color: #41cc66;
+    box-shadow: 0 0 0 1px #2a8a44;
+}
+
+*:selected {
+    background-color: #41cc66;
+    color: #0d140d;
+}
+
+button {
+    color: #cfd4cf;
+    background: #1d271d;
+    border-radius: 4px;
+}
+
+button:hover {
+    background: #2a8a44;
+    color: #5fe07a;
+}
+
+button.suggested-action {
+    background: #41cc66;
+    color: #0d140d;
+}
+
+button.destructive-action {
+    background: #cc4154;
+    color: #0d140d;
+}
+
+tooltip {
+    background: #161b16;
+    color: #cfd4cf;
+    border: 1px solid #1f2a1f;
+}
+
+scrollbar {
+    background: #0d140d;
+}
+
+scrollbar slider {
+    background: #2a8a44;
+    border-radius: 4px;
+}
+
+scrollbar slider:hover {
+    background: #41cc66;
+}

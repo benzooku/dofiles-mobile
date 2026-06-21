@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM"],
+    "types": ["astal"],
+    "baseUrl": ".",
+    "paths": {
+      "ags/*": ["node_modules/ags/*"],
+      "@widgets/*": ["widgets/*"]
+    }
+  },
+  "include": ["app.tsx", "widgets/**/*.tsx", "style.scss"]
+}

@@ -1,0 +1,2 @@
+# Neovim placeholder — populate with your config (lazy.nvim, kickstart, etc.)
+# ~/.config/nvim → ~/nixconfig/nvim (symlink, see home.activation.nvimSymlink)

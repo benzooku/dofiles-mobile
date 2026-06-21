@@ -1,0 +1,24 @@
+# NixOS hardware-specific — regenerate on each machine
+nixos/hardware-configuration.nix
+
+# Nix build artifacts
+result
+result-*
+
+# AGS runtime
+node_modules
+.cache
+dist
+build
+.tsbuildinfo
+
+# Editor/OS junk
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Local overrides (not tracked)
+.zshrc.local
+*.local
