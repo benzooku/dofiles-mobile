@@ -1,18 +1,13 @@
 # =============================================================================
 #  Hyprland — Wayland compositor + xdg-desktop-portal + audio + polkit
 # =============================================================================
-{ config, pkgs, lib, ags, hyprland, ... }:
+{ config, pkgs, lib, ... }:
 
-let
-  # AGS v2.3.0 — built from the flake input
-  agsPkg = ags.packages.${pkgs.system}.default;
-in
 {
   # ── Hyprland ─────────────────────────────────────────────────────────────
-  # Built from the pinned hyprland flake input (latest git)
   wayland.windowManager.hyprland = {
     enable = true;
-    package = hyprland.packages.${pkgs.system}.default;
+    package = pkgs.hyprland;
   };
 
   # ── xdg-desktop-portal (Hyprland backend) ───────────────────────────────
@@ -95,8 +90,8 @@ in
     pavucontrol
     qt6Packages.qtwayland
     gvfs
-    # AGS runtime (pulled from the flake input)
-    agsPkg
+    # AGS runtime (nixpkgs v2.3.0)
+    ags
   ];
 
   # ── Programs needed for Hyprland to start cleanly ────────────────────────

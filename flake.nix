@@ -9,17 +9,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland.url = "github:hyprwm/Hyprland";
-    hyprland.inputs.nixpkgs.follows = "nixpkgs";
-
-    ags.url = "github:aylur/ags";
-    ags.inputs.nixpkgs.follows = "nixpkgs";
-
     nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
     nixpkgs-wayland.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, hyprland, ags, nixpkgs-wayland, ... }:
+  outputs = { self, nixpkgs, home-manager, ... }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
@@ -27,7 +21,6 @@
       # ── NixOS system: ThinkPad T480s ─────────────────────────────────────
       nixosConfigurations.t480s = nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit ags hyprland; };
         modules = [
           ./nixos/configuration.nix
 
