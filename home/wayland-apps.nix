@@ -9,7 +9,7 @@ let
   cfgDir  = "${homeDir}/.config";
 
   # After linkGeneration so all xdg.configFile entries already exist on disk.
-  afterLinks = lib.dag.entryAfter [ "linkGeneration" ];
+  afterLinks = lib.hm.dag.entryAfter [ "linkGeneration" ];
 in
 {
   # ── Symlinks ────────────────────────────────────────────────────────────
