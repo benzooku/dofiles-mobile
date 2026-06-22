@@ -123,47 +123,56 @@ in
     fi
   '';
 
-  # ── User-level systemd services ─────────────────────────────────────────
+  # ── User-level systemd services (HM-style: Unit/Service/Install) ─────────
   systemd.user.services.ags = {
-    description = "AGS — Matrix status bar";
-    wantedBy = [ "graphical-session.target" ];
-    partOf    = [ "graphical-session.target" ];
-
-    serviceConfig = {
+    Unit = {
+      Description = "AGS — Matrix status bar";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
       Type = "simple";
       ExecStart = "${pkgs.ags}/bin/ags run ${cfgDir}/ags";
       Restart = "on-failure";
-      RestartSec = 3;
+      RestartSec = "3s";
+      Environment = "AGS_CONFIG=${cfgDir}/ags";
     };
-
-    environment = {
-      AGS_CONFIG = "${cfgDir}/ags";
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
     };
   };
 
   systemd.user.services.hypridle = {
-    description = "Hyprland idle manager";
-    wantedBy = [ "graphical-session.target" ];
-    partOf    = [ "graphical-session.target" ];
-
-    serviceConfig = {
+    Unit = {
+      Description = "Hyprland idle manager";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
       Type = "simple";
       ExecStart = "${pkgs.hypridle}/bin/hypridle";
       Restart = "on-failure";
-      RestartSec = 3;
+      RestartSec = "3s";
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
     };
   };
 
   systemd.user.services.swaync = {
-    description = "swaync — Wayland notification daemon";
-    wantedBy = [ "graphical-session.target" ];
-    partOf    = [ "graphical-session.target" ];
-
-    serviceConfig = {
+    Unit = {
+      Description = "swaync — Wayland notification daemon";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
       Type = "simple";
       ExecStart = "${pkgs.swaync}/bin/swaync";
       Restart = "on-failure";
-      RestartSec = 3;
+      RestartSec = "3s";
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
     };
   };
 }
