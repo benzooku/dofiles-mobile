@@ -4,6 +4,13 @@
 # =============================================================================
 { config, pkgs, lib, ... }:
 
+let
+  homeDir = config.home.homeDirectory;
+  cfgDir  = "${homeDir}/.config";
+
+  # After linkGeneration so all xdg.configFile entries already exist on disk.
+  afterLinks = lib.dag.entryAfter [ "linkGeneration" ];
+in
 {
   # ── Symlinks ────────────────────────────────────────────────────────────
   xdg.configFile = {
@@ -48,60 +55,89 @@
     "fastfetch/config.jsonc".source = ./fastfetch/config.jsonc;
     "cava/config".source           = ./cava/config;
 
-    # ── nvim symlink ─────────────────────────────────────────────────────
-    # ~/.config/nvim → <flake-dir>/nvim/
-    # We do this via a tiny wrapper script in home.activation (below) so we
-    # don't recursively mirror the user's existing config.
-  };
-
-  # ── Activation: ensure ~/.config/nvim points at ~/nixconfig/nvim ───────
-  home.activation.nvimSymlink = {
-    text = ''
-      if [ -e "$HOME/.config/nvim" ] && [ ! -L "$HOME/.config/nvim" ]; then
-        # Existing dir or file: rename it aside (one-time only)
-        if [ ! -e "$HOME/.config/nvim.original" ]; then
-          mv "$HOME/.config/nvim" "$HOME/.config/nvim.original"
-        else
-          rm -rf "$HOME/.config/nvim"
-        fi
-      fi
-      mkdir -p "$HOME/.config"
-      if [ ! -L "$HOME/.config/nvim" ]; then
-        ln -s "$HOME/nixconfig/nvim" "$HOME/.config/nvim"
-      fi
-    '';
+    # ── Wallpaper placeholder — keeps the dir HM-owned without polluting it
+    # ~/.config/wallpapers/.keep exists so xdg.dataFile creates the parent.
   };
 
   # ── Activation: ensure the wallpaper directory exists ───────────────────
-  home.activation.wallpaperDir = {
-    text = ''
-      mkdir -p "$HOME/.local/share/wallpapers"
-    '';
-  };
+  # Replaces the old `wallpaperDir` shell script with a declarative file —
+  # HM creates the parent dir automatically when it places the placeholder.
+  xdg.dataFile."wallpapers/.keep".text = "";
 
-  # ── Zen browser: place Matrix CSS into the right chrome dir ─────────────
-  # Zen reads userChrome from
-  #   ~/.zen/<profile>/chrome/userChrome.css
-  # We can't know the profile name ahead of time, so we drop the files into
-  # a config dir and use a tiny init script (below).
-  home.file.".local/share/zen-template/userChrome.css".source = ./zen/userChrome.css;
+  # ── Activation: ensure ~/.config/nvim points at ~/nixconfig/nvim ───────
+  home.activation.nvimSymlink = afterLinks (lib.hm.shell {
+    name = "nvim-symlink";
+    type = "bash";
+    text = ''
+      target="${cfgDir}/nvim"
+      link="${homeDir}/nixconfig/nvim"
+      mkdir -p "$(dirname "$target")"
+
+      # Stash any pre-existing config once (only first time).
+      if [ -e "$target" ] && [ ! -L "$target" ]; then
+        if [ ! -e "''${target}.original" ]; then
+          mv "$target" "''${target}.original"
+        else
+          rm -rf "$target"
+        fi
+      fi
+
+      # Re-link if missing or pointing somewhere else.
+      if [ ! -L "$target" ] || [ "$(readlink "$target")" != "$link" ]; then
+        ln -sfn "$link" "$target"
+      fi
+    '';
+  });
+
+  # ── Zen browser: place Matrix CSS into every existing chrome profile ───
+  home.file.".local/share/zen-template/userChrome.css".source  = ./zen/userChrome.css;
   home.file.".local/share/zen-template/userContent.css".source = ./zen/userContent.css;
 
-  home.activation.zenTemplate = {
+  home.activation.zenTemplate = afterLinks (lib.hm.shell {
+    name = "zen-template";
+    type = "bash";
     text = ''
-      # Symlink Zen chrome CSS into every existing Zen profile, and create
-      # a template directory the user can copy manually for new profiles.
-      for profdir in "$HOME"/.zen/*/chrome; do
+      template="${homeDir}/.local/share/zen-template"
+      shopt -s nullglob
+      for profdir in ${homeDir}/.zen/*/chrome; do
         [ -d "$profdir" ] || continue
-        if [ ! -L "$profdir/userChrome.css" ] && [ ! -e "$profdir/userChrome.css" ]; then
-          ln -s "$HOME/.local/share/zen-template/userChrome.css" "$profdir/userChrome.css"
-        fi
-        if [ ! -L "$profdir/userContent.css" ] && [ ! -e "$profdir/userContent.css" ]; then
-          ln -s "$HOME/.local/share/zen-template/userContent.css" "$profdir/userContent.css"
-        fi
+        ln -sfn "$template/userChrome.css"  "$profdir/userChrome.css"
+        ln -sfn "$template/userContent.css" "$profdir/userContent.css"
       done
     '';
-  };
+  });
+
+  # ── AGS modules install (bun install at activation) ─────────────────────
+  home.activation.agsInstall = afterLinks (lib.hm.shell {
+    name = "ags-install";
+    type = "bash";
+    runtimeInputs = [ pkgs.bun ];
+    text = ''
+      agsDir="${cfgDir}/ags"
+
+      if [ ! -f "$agsDir/package.json" ]; then
+        echo "AGS: no package.json at $agsDir — skipping."
+        exit 0
+      fi
+
+      cd "$agsDir"
+
+      # Reinstall if node_modules is missing OR package.json is newer.
+      if [ ! -d node_modules ] || [ package.json -nt node_modules ]; then
+        echo "AGS: installing dependencies..."
+        bun install
+      else
+        echo "AGS: node_modules up to date."
+        exit 0
+      fi
+
+      # Pick up the new modules in the running AGS service.
+      # Skip in --dry-run (HM sets DRY_RUN=1 then).
+      if [ -z "''${DRY_RUN:-}" ] && command -v systemctl >/dev/null 2>&1; then
+        systemctl --user try-restart ags.service || true
+      fi
+    '';
+  });
 
   # ── User-level systemd services ─────────────────────────────────────────
   # AGS — autostarted when Hyprland starts (via hyprland.conf exec-once)
@@ -112,13 +148,13 @@
 
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.ags}/bin/ags run /home/ben/.config/ags";
+      ExecStart = "${pkgs.ags}/bin/ags run ${cfgDir}/ags";
       Restart = "on-failure";
       RestartSec = 3;
     };
 
     environment = {
-      AGS_CONFIG = "/home/ben/.config/ags";
+      AGS_CONFIG = "${cfgDir}/ags";
     };
   };
 
@@ -148,22 +184,5 @@
       Restart = "on-failure";
       RestartSec = 3;
     };
-  };
-
-  # ── AGS modules install (npm ci at activation) ─────────────────────────
-  home.activation.agsInstall = {
-    text = ''
-      if [ -f "$HOME/.config/ags/package.json" ]; then
-        cd "$HOME/.config/ags"
-        if [ ! -d node_modules ]; then
-          # use Home Manager's bundler if available, else fallback to system
-          if command -v bun >/dev/null 2>&1; then
-            bun install
-          elif command -v npm >/dev/null 2>&1; then
-            npm install
-          fi
-        fi
-      fi
-    '';
   };
 }
