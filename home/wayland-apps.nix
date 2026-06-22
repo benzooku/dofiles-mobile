@@ -8,7 +8,8 @@ let
   homeDir = config.home.homeDirectory;
   cfgDir  = "${homeDir}/.config";
 
-  # After linkGeneration so all xdg.configFile entries already exist on disk.
+  # Run after the internal linkGeneration step so all xdg.configFile entries
+  # actually exist on disk when our scripts look at them.
   afterLinks = lib.hm.dag.entryAfter [ "linkGeneration" ];
 in
 {
@@ -54,93 +55,75 @@ in
     "btop/btop.conf".source        = ./btop/btop.conf;
     "fastfetch/config.jsonc".source = ./fastfetch/config.jsonc;
     "cava/config".source           = ./cava/config;
-
-    # ── Wallpaper placeholder — keeps the dir HM-owned without polluting it
-    # ~/.config/wallpapers/.keep exists so xdg.dataFile creates the parent.
   };
 
-  # ── Activation: ensure the wallpaper directory exists ───────────────────
-  # Replaces the old `wallpaperDir` shell script with a declarative file —
-  # HM creates the parent dir automatically when it places the placeholder.
+  # ── Wallpapers dir: declared declaratively so HM owns it ────────────────
+  # dataFile with a placeholder ensures the parent dir is created.
   xdg.dataFile."wallpapers/.keep".text = "";
 
   # ── Activation: ensure ~/.config/nvim points at ~/nixconfig/nvim ───────
-  home.activation.nvimSymlink = afterLinks (lib.hm.shell {
-    name = "nvim-symlink";
-    type = "bash";
-    text = ''
-      target="${cfgDir}/nvim"
-      link="${homeDir}/nixconfig/nvim"
-      mkdir -p "$(dirname "$target")"
+  home.activation.nvimSymlink = afterLinks ''
+    target="${cfgDir}/nvim"
+    link="${homeDir}/nixconfig/nvim"
+    mkdir -p "$(dirname "$target")"
 
-      # Stash any pre-existing config once (only first time).
-      if [ -e "$target" ] && [ ! -L "$target" ]; then
-        if [ ! -e "''${target}.original" ]; then
-          mv "$target" "''${target}.original"
-        else
-          rm -rf "$target"
-        fi
+    # Stash any pre-existing config once (only first time).
+    if [ -e "$target" ] && [ ! -L "$target" ]; then
+      if [ ! -e "''${target}.original" ]; then
+        mv "$target" "''${target}.original"
+      else
+        rm -rf "$target"
       fi
+    fi
 
-      # Re-link if missing or pointing somewhere else.
-      if [ ! -L "$target" ] || [ "$(readlink "$target")" != "$link" ]; then
-        ln -sfn "$link" "$target"
-      fi
-    '';
-  });
+    # Re-link if missing or pointing somewhere else.
+    if [ ! -L "$target" ] || [ "$(readlink "$target")" != "$link" ]; then
+      ln -sfn "$link" "$target"
+    fi
+  '';
 
   # ── Zen browser: place Matrix CSS into every existing chrome profile ───
   home.file.".local/share/zen-template/userChrome.css".source  = ./zen/userChrome.css;
   home.file.".local/share/zen-template/userContent.css".source = ./zen/userContent.css;
 
-  home.activation.zenTemplate = afterLinks (lib.hm.shell {
-    name = "zen-template";
-    type = "bash";
-    text = ''
-      template="${homeDir}/.local/share/zen-template"
-      shopt -s nullglob
-      for profdir in ${homeDir}/.zen/*/chrome; do
-        [ -d "$profdir" ] || continue
-        ln -sfn "$template/userChrome.css"  "$profdir/userChrome.css"
-        ln -sfn "$template/userContent.css" "$profdir/userContent.css"
-      done
-    '';
-  });
+  home.activation.zenTemplate = afterLinks ''
+    template="${homeDir}/.local/share/zen-template"
+    shopt -s nullglob
+    for profdir in ${homeDir}/.zen/*/chrome; do
+      [ -d "$profdir" ] || continue
+      ln -sfn "$template/userChrome.css"  "$profdir/userChrome.css"
+      ln -sfn "$template/userContent.css" "$profdir/userContent.css"
+    done
+  '';
 
   # ── AGS modules install (bun install at activation) ─────────────────────
-  home.activation.agsInstall = afterLinks (lib.hm.shell {
-    name = "ags-install";
-    type = "bash";
-    runtimeInputs = [ pkgs.bun ];
-    text = ''
-      agsDir="${cfgDir}/ags"
+  home.activation.agsInstall = afterLinks ''
+    agsDir="${cfgDir}/ags"
 
-      if [ ! -f "$agsDir/package.json" ]; then
-        echo "AGS: no package.json at $agsDir — skipping."
-        exit 0
-      fi
+    if [ ! -f "$agsDir/package.json" ]; then
+      echo "AGS: no package.json at $agsDir — skipping."
+      exit 0
+    fi
 
-      cd "$agsDir"
+    cd "$agsDir"
 
-      # Reinstall if node_modules is missing OR package.json is newer.
-      if [ ! -d node_modules ] || [ package.json -nt node_modules ]; then
-        echo "AGS: installing dependencies..."
-        bun install
-      else
-        echo "AGS: node_modules up to date."
-        exit 0
-      fi
+    # Reinstall if node_modules is missing OR package.json is newer.
+    if [ ! -d node_modules ] || [ package.json -nt node_modules ]; then
+      echo "AGS: installing dependencies..."
+      ${pkgs.bun}/bin/bun install
+    else
+      echo "AGS: node_modules up to date."
+      exit 0
+    fi
 
-      # Pick up the new modules in the running AGS service.
-      # Skip in --dry-run (HM sets DRY_RUN=1 then).
-      if [ -z "''${DRY_RUN:-}" ] && command -v systemctl >/dev/null 2>&1; then
-        systemctl --user try-restart ags.service || true
-      fi
-    '';
-  });
+    # Pick up the new modules in the running AGS service.
+    # Skip in --dry-run (HM sets DRY_RUN=1 then).
+    if [ -z "''${DRY_RUN:-}" ] && command -v systemctl >/dev/null 2>&1; then
+      systemctl --user try-restart ags.service || true
+    fi
+  '';
 
   # ── User-level systemd services ─────────────────────────────────────────
-  # AGS — autostarted when Hyprland starts (via hyprland.conf exec-once)
   systemd.user.services.ags = {
     description = "AGS — Matrix status bar";
     wantedBy = [ "graphical-session.target" ];
@@ -158,7 +141,6 @@ in
     };
   };
 
-  # ── hypridle (replaces default, runs as user) ───────────────────────────
   systemd.user.services.hypridle = {
     description = "Hyprland idle manager";
     wantedBy = [ "graphical-session.target" ];
@@ -172,7 +154,6 @@ in
     };
   };
 
-  # ── swaync (notification daemon) ────────────────────────────────────────
   systemd.user.services.swaync = {
     description = "swaync — Wayland notification daemon";
     wantedBy = [ "graphical-session.target" ];
