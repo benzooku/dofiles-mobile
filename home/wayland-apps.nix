@@ -24,8 +24,8 @@ in
     "walker/style.css".source = ./walker/style.css;
 
     # ── Swaync ───────────────────────────────────────────────────────────
-    "swaync/config.json".source = ./swaync/config.json;
-    "swaync/style.css".source  = ./swaync/style.css;
+    # config.json is owned by services.swaync below (HM writes it from `settings`).
+    "swaync/style.css".source = ./swaync/style.css;
 
     # ── AGS (the v2 source lives here) ──────────────────────────────────
     "ags/package.json".source   = ./ags/package.json;
@@ -142,37 +142,111 @@ in
     };
   };
 
-  systemd.user.services.hypridle = {
-    Unit = {
-      Description = "Hyprland idle manager";
-      After = [ "graphical-session.target" ];
-      PartOf = [ "graphical-session.target" ];
-    };
-    Service = {
-      Type = "simple";
-      ExecStart = "${pkgs.hypridle}/bin/hypridle";
-      Restart = "on-failure";
-      RestartSec = "3s";
-    };
-    Install = {
-      WantedBy = [ "graphical-session.target" ];
+  # ── HM services: swaync ────────────────────────────────────────────────
+  # HM unconditionally writes ~/.config/swaync/config.json from `settings`
+  # using pkgs.formats.json, so we own the whole config here and let HM
+  # generate + start the systemd unit.
+  services.swaync = {
+    enable = true;
+    settings = {
+      positionX = "right";
+      positionY = "top";
+      layer = "overlay";
+      "control-center-layer" = "top";
+      "layer-shell" = true;
+      cssPriority = "user";
+
+      displayConditions = {
+        pause = true;
+        enable = true;
+      };
+
+      "image-visibility" = false;
+      "transition-time" = 200;
+      "hide-on-clear" = false;
+      "hide-on-action" = true;
+      "buttons-x-position" = "right";
+      "buttons-y-position" = "bottom";
+
+      widgets = [
+        "buttons"
+        "notification"
+        [ "title" "body" ]
+      ];
+
+      "widget-config" = {
+        title = {
+          font = "JetBrainsMono Nerd Font";
+          "max-lines" = 1;
+          text = "Notifications";
+        };
+        buttons = {
+          "action-icons" = true;
+          "show-empty-text" = false;
+          "reload-button" = {
+            label = "Reload";
+            action = "swaync-client --reload-config";
+          };
+          "dnd-button" = {
+            label = "Do Not Disturb";
+            action = "swaync-client --toggle-dnd";
+          };
+          "close-all-button" = {
+            label = "Close All";
+            action = "swaync-client --close-all";
+          };
+        };
+      };
+
+      "notification-visibility" = {
+        "control-center" = true;
+        "notification-window" = true;
+      };
+
+      scripts = {
+        "scripts-path" = "~/.config/swaync/scripts";
+      };
+
+      "notification-window" = {
+        width = 360;
+        height = 100;
+        "border-radius" = 4;
+        "border-width" = 2;
+        "border-color" = "#41cc66";
+        padding = 12;
+        margin = 12;
+        positionX = "right";
+        positionY = "top";
+        timeout = 5;
+        "timeout-low" = 10;
+        "timeout-critical" = 0;
+        transparency = 5;
+        "fadein-time" = 200;
+        "fadeout-time" = 200;
+      };
+
+      "control-center" = {
+        width = 380;
+        height = 480;
+        "border-radius" = 8;
+        "border-width" = 2;
+        "border-color" = "#41cc66";
+        padding = 14;
+        margin = 14;
+        positionX = "right";
+        positionY = "top";
+        transparency = 8;
+        "fadein-time" = 200;
+        "fadeout-time" = 200;
+        "show-notification-count" = true;
+        backdrop = false;
+      };
     };
   };
 
-  systemd.user.services.swaync = {
-    Unit = {
-      Description = "swaync — Wayland notification daemon";
-      After = [ "graphical-session.target" ];
-      PartOf = [ "graphical-session.target" ];
-    };
-    Service = {
-      Type = "simple";
-      ExecStart = "${pkgs.swaync}/bin/swaync";
-      Restart = "on-failure";
-      RestartSec = "3s";
-    };
-    Install = {
-      WantedBy = [ "graphical-session.target" ];
-    };
-  };
+  # ── HM services: hypridle ──────────────────────────────────────────────
+  # Enabled without `settings` so HM's own xdg.configFile for hypridle.conf
+  # stays empty (mkIf cfg.settings != {}), letting our symlinked
+  # xdg.configFile."hypr/hypridle.conf" keep owning the file.
+  services.hypridle.enable = true;
 }
